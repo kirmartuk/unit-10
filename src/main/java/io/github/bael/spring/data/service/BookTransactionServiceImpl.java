@@ -7,7 +7,10 @@ import io.github.bael.spring.data.entity.Book;
 import io.github.bael.spring.data.entity.Customer;
 import io.github.bael.spring.data.entity.PurchasedBook;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+@Transactional
 @Service
 public class BookTransactionServiceImpl implements BookTransactionService {
     private final BookRepository bookRepository;
@@ -33,7 +36,7 @@ public class BookTransactionServiceImpl implements BookTransactionService {
 
 
     @Override
-    public void doTransaction(Customer customer, Book book, double cost) {
+    public void doTransaction(Customer customer, Book book, BigDecimal cost) {
         PurchasedBook purchasedBook = new PurchasedBook();
         purchasedBook.setCustomer(customer);
         purchasedBook.setBook(book);
@@ -42,22 +45,22 @@ public class BookTransactionServiceImpl implements BookTransactionService {
     }
 
     @Override
-    public Double sumOfBookSales(Book book) {
+    public BigDecimal sumOfBookSales(Book book) {
         return purchasedBookRepository
                 .findByBook(book)
                 .stream()
                 .map(purchasedBook -> purchasedBook.getCost())
-                .reduce((aDouble, aDouble2) -> Double.sum(aDouble,aDouble2))
-                .orElse((double) 0);
+                .reduce((bigDecimal, bigDecimal2) -> bigDecimal.add(bigDecimal2))
+                .orElse(BigDecimal.ZERO);
     }
 
     @Override
-    public Double sumOfCostPurchasedBooksByCustomer(Customer customer) {
+    public BigDecimal sumOfCostPurchasedBooksByCustomer(Customer customer) {
         return purchasedBookRepository
                 .findByCustomer(customer)
                 .stream()
                 .map(purchasedBook -> purchasedBook.getCost())
-                .reduce((aDouble, aDouble2) -> Double.sum(aDouble,aDouble2))
-                .orElse((double) 0);
+                .reduce((bigDecimal, bigDecimal2) -> bigDecimal.add(bigDecimal2))
+                .orElse(BigDecimal.ZERO);
     }
 }

@@ -17,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -161,18 +163,18 @@ public class BookServiceImplTest {
     }
     @Test
     public void sumOfBookSalesTest(){
-        bookTransactionService.doTransaction(customer1,book1,1200.00);
-        bookTransactionService.doTransaction(customer2,book1,1200.00);
-        Double sumSales = bookTransactionService.sumOfBookSales(book1);
-        assertEquals(Double.valueOf(2400), sumSales);
+        bookTransactionService.doTransaction(customer1,book1, BigDecimal.valueOf(1200.00));
+        bookTransactionService.doTransaction(customer2,book1, BigDecimal.valueOf(1200.00));
+        BigDecimal sumSales = bookTransactionService.sumOfBookSales(book1);
+        assertEquals(BigDecimal.valueOf(2400), sumSales);
     }
     @Test
     public void sumOfCostPurchasedBooksByCustomerTest(){
-        bookTransactionService.doTransaction(customer1,book1,1200.00);
-        bookTransactionService.doTransaction(customer1,book2,999.99);
-        bookTransactionService.doTransaction(customer1,book1,1200.00);
-        Double sum = bookTransactionService.sumOfCostPurchasedBooksByCustomer(customer1);
-        assertEquals( Double.valueOf(3399.99), sum);
+        bookTransactionService.doTransaction(customer1,book1, BigDecimal.valueOf(1200.00));
+        bookTransactionService.doTransaction(customer1,book2,BigDecimal.valueOf(999.99));
+        bookTransactionService.doTransaction(customer1,book1,BigDecimal.valueOf(1200.00));
+        BigDecimal sum = bookTransactionService.sumOfCostPurchasedBooksByCustomer(customer1);
+        assertEquals( BigDecimal.valueOf(3399.99), sum);
 
 
     }

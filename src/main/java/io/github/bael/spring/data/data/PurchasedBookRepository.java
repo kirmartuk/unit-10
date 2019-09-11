@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-@Repository
+
 public interface PurchasedBookRepository extends CrudRepository<PurchasedBook, Long>
 , JpaRepository<PurchasedBook, Long> {
     List<PurchasedBook> findByBook(Book book);
