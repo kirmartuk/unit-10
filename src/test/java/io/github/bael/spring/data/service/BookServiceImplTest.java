@@ -8,13 +8,12 @@ import io.github.bael.spring.data.data.BooksSpecification;
 import io.github.bael.spring.data.entity.Author;
 import io.github.bael.spring.data.entity.AuthorOfBook;
 import io.github.bael.spring.data.entity.Book;
-import org.junit.Assert;
+import io.github.bael.spring.data.entity.Customer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -36,6 +35,11 @@ public class BookServiceImplTest {
 
     @Autowired
     private BookService bookService;
+    @Autowired
+    private BookTransactionService bookTransactionService;
+    private Customer customer1,customer2;
+    private Book book1,book2;
+
 
     @Before
     public void init() {
@@ -51,20 +55,28 @@ public class BookServiceImplTest {
         jules.setLastname("Verne");
         authorRepository.save(jules);
 
+        customer1 = new Customer();
+        customer1.setName("Customer1");
+        customer1.setAddress("Address1");
+        bookTransactionService.save(customer1);
 
+        customer2 = new Customer();
+        customer1.setName("Customer2");
+        customer1.setAddress("Address2");
+        bookTransactionService.save(customer2);
 
-        Book book = new Book();
-        book.setDescription("Увлекательные приключения Тома Сойера");
-        book.setTitle("Приключения Тома Сойера");
-        book.setYear(1876);
-        bookRepository.save(book);
+        book1 = new Book();
+        book1.setDescription("Увлекательные приключения Тома Сойера");
+        book1.setTitle("Приключения Тома Сойера");
+        book1.setYear(1876);
+        bookRepository.save(book1);
 
         AuthorOfBook aob1 = new AuthorOfBook();
         aob1.setAuthor(mark);
-        aob1.setBook(book);
+        aob1.setBook(book1);
         authorOfBookRepository.save(aob1);
 
-        Book book2 = new Book();
+        book2 = new Book();
         book2.setTitle("Михаил Строгов");
         book2.setYear(1876);
         bookRepository.save(book2);
@@ -141,9 +153,32 @@ public class BookServiceImplTest {
 
     }
 
+
+
     @Test
     public void testComplexQuery() {
         System.out.println(bookRepository.complexQueryMethod());
     }
+    @Test
+    public void sumOfBookSalesTest(){
+        bookTransactionService.doTransaction(customer1,book1,1200.00);
+        bookTransactionService.doTransaction(customer2,book1,1200.00);
+        Double sumSales = bookTransactionService.sumOfBookSales(book1);
+        assertEquals(Double.valueOf(2400), sumSales);
+    }
+    @Test
+    public void sumOfCostPurchasedBooksByCustomerTest(){
+        bookTransactionService.doTransaction(customer1,book1,1200.00);
+        bookTransactionService.doTransaction(customer1,book2,999.99);
+        bookTransactionService.doTransaction(customer1,book1,1200.00);
+        Double sum = bookTransactionService.sumOfCostPurchasedBooksByCustomer(customer1);
+        assertEquals( Double.valueOf(3399.99), sum);
+
+
+    }
+
+
+
+
 
 }
